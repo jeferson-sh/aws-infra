@@ -5,16 +5,19 @@ provider "aws" {
 
 # Crie um repositório ECR
 resource "aws_ecr_repository" "ecr_repository" {
+  count = length(aws_ecr_repository.my_ecr_repo) == 0 ? 1 : 0
   name = "ecr-repository"  # Nome do repositório ECR
 }
 
 # Crie um cluster ECS
 resource "aws_ecs_cluster" "ecs_cluster" {
+  count = length(aws_ecr_repository.my_ecr_repo) == 0 ? 1 : 0
   name = "ecs-cluster"  # Nome do cluster
 }
 
 # Defina a IAM Role para as tasks ECS
 resource "aws_iam_role" "ecs_task_execution_role" {
+  count = length(aws_ecr_repository.my_ecr_repo) == 0 ? 1 : 0
   name               = "ecs-task-execution-role"
   assume_role_policy = <<EOF
 {
@@ -34,12 +37,14 @@ EOF
 
 # Anexe a política ECS à IAM Role
 resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy_attachment" {
+  count = length(aws_ecr_repository.my_ecr_repo) == 0 ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
   role       = aws_iam_role.ecs_task_execution_role.name
 }
 
 # Defina uma definição de task ECS
 resource "aws_ecs_task_definition" "ecs_task_definition" {
+  count = length(aws_ecr_repository.my_ecr_repo) == 0 ? 1 : 0
   family                   = "ecs-task-definition"
   container_definitions    = <<EOF
 [
@@ -62,6 +67,7 @@ EOF
 
 # Defina um serviço ECS
 resource "aws_ecs_service" "ecs_service" {
+  count = length(aws_ecr_repository.my_ecr_repo) == 0 ? 1 : 0
   name            = "ecs-service"
   cluster         = aws_ecs_cluster.ecs_cluster.arn
   task_definition = aws_ecs_task_definition.ecs_task_definition.arn
@@ -82,6 +88,7 @@ resource "aws_ecs_service" "ecs_service" {
 
 # Crie um Target Group para o Load Balancer
 resource "aws_lb_target_group" "ecs_target_group" {
+  count = length(aws_ecr_repository.my_ecr_repo) == 0 ? 1 : 0
   name     = "ecs-target-group"
   port     = 80
   protocol = "HTTP"
@@ -97,6 +104,7 @@ resource "aws_lb_target_group" "ecs_target_group" {
 
 # Crie um Load Balancer
 resource "aws_lb" "ecs_load_balancer" {
+  count = length(aws_ecr_repository.my_ecr_repo) == 0 ? 1 : 0
   name               = "ecs-load-balancer"
   internal           = false
   load_balancer_type = "application"
@@ -110,6 +118,7 @@ resource "aws_lb" "ecs_load_balancer" {
 
 # Crie um Security Group para o Load Balancer
 resource "aws_security_group" "ecs_security_group" {
+  count = length(aws_ecr_repository.my_ecr_repo) == 0 ? 1 : 0
   name        = "ecs-security-group"
   description = "Allow HTTP inbound traffic"
 
