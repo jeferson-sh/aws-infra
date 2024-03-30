@@ -276,7 +276,7 @@ resource "aws_iam_policy" "ecs_policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "attach_dynamodb_policy" {
-  role       = aws_iam_role.task_role.name
+  role       = aws_iam_role.ecs_task_execution_role.name
   policy_arn = aws_iam_policy.ecs_policy.arn
 }
 
