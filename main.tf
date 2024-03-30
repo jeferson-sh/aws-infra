@@ -3,6 +3,16 @@ provider "aws" {
   region = var.aws_region  # Defina a região desejada
 }
 
+# Configuração do backend S3 para armazenar o estado do Terraform
+terraform {
+  backend "s3" {
+    bucket         = "bucket-s3-terraform"  # Nome do bucket S3 onde o estado será armazenado
+    key            = "terraform.tfstate"  # Nome do arquivo de estado no bucket
+    region         = "us-east-1"  # Região onde o bucket S3 está localizado
+    dynamodb_table = "terraform_locks"  # Nome da tabela DynamoDB para bloqueios de estado (opcional, recomendado para trabalho em equipe)
+  }
+}
+
 # Crie um repositório ECR
 resource "aws_ecr_repository" "ecr_repository" {
   #count = length(aws_ecr_repository.ecr_repository) == 0 ? 1 : 0
