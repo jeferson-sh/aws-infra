@@ -187,7 +187,7 @@ resource "aws_iam_policy" "ecs_policy" {
                 "logs:DescribeLogGroups",
                 "logs:PutRetentionPolicy"
             ],
-            "Resource": "arn:aws:logs:*:*:log-group:/aws/ecs/*"
+            "Resource": "*"
         },
         {
             "Sid": "CWLogStreamManagement",
@@ -197,7 +197,7 @@ resource "aws_iam_policy" "ecs_policy" {
                 "logs:DescribeLogStreams",
                 "logs:PutLogEvents"
             ],
-            "Resource": "arn:aws:logs:*:*:log-group:/aws/ecs/*:log-stream:*"
+            "Resource": "*"
         },
         {
             "Sid": "ExecuteCommandSessionManagement",
