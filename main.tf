@@ -15,6 +15,7 @@ terraform {
 # Crie um repositório ECR
 resource "aws_ecr_repository" "ecr_repository" {
   name = "ecr-repository"  # Nome do repositório ECR
+  force_delete = true
 }
 
 # Crie um cluster ECS
