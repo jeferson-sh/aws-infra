@@ -47,6 +47,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
   #count = length(aws_ecs_task_definition.ecs_task_definition) == 0 ? 1 : 0
   family                   = "ecs-task-definition"
   network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
   container_definitions    = <<EOF
 [
   {
