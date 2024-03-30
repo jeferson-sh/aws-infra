@@ -101,10 +101,10 @@ resource "aws_ecs_task_definition" "task_definition" {
         }
       ],
       logConfiguration = {
-        logDriver = "awslogs"
+        logDriver = "awslogs",
         options = {
-          "awslogs-group"         = aws_cloudwatch_log_group.aws_log_group.name
-          "awslogs-region"        = var.aws_region
+          "awslogs-group"         = aws_cloudwatch_log_group.aws_log_group.name,
+          "awslogs-region"        = var.aws_region,
           "awslogs-stream-prefix" = aws_cloudwatch_log_stream.log_stream.name
         }
       }
