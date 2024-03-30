@@ -276,39 +276,37 @@ resource "aws_iam_role_policy_attachment" "attach_dynamodb_policy" {
 }
 
 
-## Defina uma definição de task ECS
-#resource "aws_ecs_task_definition" "ecs_task_definition" {
-#  family                   = "ecs-task-definition"
-#  network_mode             = "awsvpc"
-#  requires_compatibilities = ["FARGATE"]
-#  cpu = 256
-#  memory = 512
-#  execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
-#  task_role_arn = aws_iam_role.task_role.arn
-#  container_definitions    = <<EOF
-#[
-#  {
-#    "name": "ecs-container",
-#    "image": "${aws_ecr_repository.ecr_repository.repository_url}:latest",
-#    "cpu": 256,
-#    "memory": 512,
-#    "essential": true,
-#    "portMappings": [
-#      {
-#        "containerPort": 8080,
-#        "hostPort": 8080
-#      }
-#    ]
-#  }
-#]
-#EOF
-#}
+# Defina uma definição de task ECS
+resource "aws_ecs_task_definition" "ecs_task_definition" {
+  family                   = "ecs-task-definition"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu = 256
+  memory = 512
+  execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn = aws_iam_role.task_role.arn
+  container_definitions = jsonencode([
+    {
+      name : "ecs-container",
+      image : "${aws_ecr_repository.ecr_repository.repository_url}:latest",
+      cpu : 256,
+      memory : 512,
+      essential : true,
+      portMappings : [
+        {
+          "containerPort": 8080,
+          "hostPort": 8080
+        }
+      ]
+    }
+  ])
+}
 
 # Defina um serviço ECS
 resource "aws_ecs_service" "ecs_service" {
   name            = "ecs-service"
   cluster         = aws_ecs_cluster.ecs_cluster.arn
-#  task_definition = aws_ecs_task_definition.ecs_task_definition.arn
+  task_definition = aws_ecs_task_definition.ecs_task_definition.arn
   desired_count   = 0
   launch_type     = "FARGATE"  # Indica que o serviço será executado no Fargate
 
