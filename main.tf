@@ -308,11 +308,8 @@ resource "aws_iam_role_policy_attachment" "attach_dynamodb_policy" {
 resource "aws_ecs_service" "ecs_service" {
   name            = "ecs-service"
   cluster         = aws_ecs_cluster.ecs_cluster.arn
-  deployment_controller {
-    type = "EXTERNAL"
-  }
 #  task_definition = aws_ecs_task_definition.ecs_task_definition.arn
-  desired_count   = 1
+  desired_count   = 0
   launch_type     = "FARGATE"  # Indica que o serviço será executado no Fargate
 
   # Configurações para Load Balancer
