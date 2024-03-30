@@ -275,6 +275,12 @@ resource "aws_iam_role_policy_attachment" "attach_dynamodb_policy" {
   policy_arn = aws_iam_policy.ecs_policy.arn
 }
 
+#Log group
+resource "aws_cloudwatch_log_group" "ecs_log_group" {
+  name              = "/ecs/ecs-container"
+  retention_in_days = 7  # Altere conforme necessário
+}
+
 
 # Defina uma definição de task ECS
 resource "aws_ecs_task_definition" "ecs_task_definition" {
@@ -301,8 +307,8 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group"         = "/ecs/ecs-container"
-          "awslogs-region"        = "us-west-2"
+          "awslogs-group"         = aws_cloudwatch_log_group.ecs_log_group.name
+          "awslogs-region"        = var.aws_region
           "awslogs-stream-prefix" = "ecs"
         }
       }
