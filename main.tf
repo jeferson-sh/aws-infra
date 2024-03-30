@@ -77,7 +77,7 @@ resource "aws_ecs_service" "ecs_service" {
 
   # Configurações para Load Balancer
   network_configuration {
-    security_groups = [aws_security_group.ecs_security_group]
+    security_groups = [aws_security_group.ecs_security_group[0].arn]
     subnets = var.subnet_ids
   }
 
