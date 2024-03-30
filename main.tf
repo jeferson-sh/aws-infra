@@ -286,7 +286,7 @@ resource "aws_cloudwatch_log_group" "aws_log_group" {
 }
 
 resource "aws_cloudwatch_log_stream" "log_stream" {
-  name           = "log-stream"
+  name           = "/aws/ecs/log-stream"
   log_group_name = aws_cloudwatch_log_group.aws_log_group.name
 }
 
