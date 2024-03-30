@@ -304,7 +304,7 @@ resource "aws_ecs_task_definition" "task_definition" {
         options = {
           "awslogs-group"         = "/aws/ecs/log-group"
           "awslogs-region"        = var.aws_region
-          "awslogs-stream-prefix" = "ecs"
+          "awslogs-stream-prefix" = "log-stream"
           "awslogs-create-group"  = "true"
         }
       }
