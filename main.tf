@@ -14,7 +14,6 @@ terraform {
     bucket         = "bucket-s3-terraform"  # Nome do bucket S3 onde o estado será armazenado
     key            = "terraform.tfstate"  # Nome do arquivo de estado no bucket
     region         = "us-east-2"  # Região onde o bucket S3 está localizado
-    dynamodb_table = "terraform_locks"  # Nome da tabela DynamoDB para bloqueios de estado (opcional, recomendado para trabalho em equipe)
   }
 }
 
