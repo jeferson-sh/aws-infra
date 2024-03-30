@@ -39,7 +39,7 @@ EOF
 resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy_attachment" {
   #count = length(aws_iam_role_policy_attachment.ecs_task_execution_role_policy_attachment) == 0 ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-  role       = aws_iam_role.ecs_task_execution_role[0].name
+  role       = aws_iam_role.ecs_task_execution_role.name
 }
 
 # Defina uma definição de task ECS
@@ -51,7 +51,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
 [
   {
     "name": "ecs-container",
-    "image": "${aws_ecr_repository.ecr_repository[0].repository_url}:latest",
+    "image": "${aws_ecr_repository.ecr_repository.repository_url}:latest",
     "cpu": 256,
     "memory": 512,
     "essential": true,
@@ -70,19 +70,19 @@ EOF
 resource "aws_ecs_service" "ecs_service" {
   #count = length(aws_ecs_service.ecs_service) == 0 ? 1 : 0
   name            = "ecs-service"
-  cluster         = aws_ecs_cluster.ecs_cluster[0].arn
-  task_definition = aws_ecs_task_definition.ecs_task_definition[0].arn
+  cluster         = aws_ecs_cluster.ecs_cluster.arn
+  task_definition = aws_ecs_task_definition.ecs_task_definition.arn
   desired_count   = 1
   launch_type     = "FARGATE"  # Indica que o serviço será executado no Fargate
 
   # Configurações para Load Balancer
   network_configuration {
-    security_groups = [aws_security_group.ecs_security_group[0].arn]
+    security_groups = [aws_security_group.ecs_security_group.arn]
     subnets = var.subnet_ids
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.ecs_target_group[0].arn
+    target_group_arn = aws_lb_target_group.ecs_target_group.arn
     container_name   = "ecs-container"
     container_port   = 8080
   }
@@ -110,7 +110,7 @@ resource "aws_lb" "ecs_load_balancer" {
   name               = "ecs-load-balancer"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.ecs_security_group[0].id]
+  security_groups    = [aws_security_group.ecs_security_group.id]
   subnets            = var.subnet_ids  # Defina os IDs das sub-redes onde o Load Balancer será criado
 
   tags = {
