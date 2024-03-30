@@ -324,6 +324,8 @@ resource "aws_ecs_service" "ecs_service" {
     container_name   = "ecs-container"
     container_port   = 8080
   }
+
+  depends_on = [ aws_alb_listener.alb_listener ]
 }
 
 # Crie um Target Group para o Load Balancer
@@ -333,6 +335,7 @@ resource "aws_lb_target_group" "ecs_target_group" {
   port     = 80
   protocol = "HTTP"
   target_type = "ip"
+  
 
   health_check {
     path     = "/"
@@ -345,7 +348,6 @@ resource "aws_lb_target_group" "ecs_target_group" {
 
 # Crie um Load Balancer
 resource "aws_lb" "ecs_load_balancer" {
-  #count = length(aws_lb.ecs_load_balancer) == 0 ? 1 : 0
   name               = "ecs-load-balancer"
   internal           = false
   load_balancer_type = "application"
@@ -375,5 +377,16 @@ resource "aws_security_group" "ecs_security_group" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_alb_listener" "alb_listener" {
+  load_balancer_arn = aws_lb.ecs_load_balancer.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    target_group_arn = aws_lb_target_group.ecs_target_group.arn
+    type             = "forward"
   }
 }
