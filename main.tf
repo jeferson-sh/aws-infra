@@ -278,8 +278,8 @@ resource "aws_iam_role_policy_attachment" "attach_dynamodb_policy" {
 
 
 # Defina uma definição de task ECS
-resource "aws_ecs_task_definition" "ecs_task_definition" {
-  family                   = "ecs-task-definition"
+resource "aws_ecs_task_definition" "task_definition" {
+  family                   = "task-definition"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu = 256
@@ -302,7 +302,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group"         = "/ecs/ecs-log-group"
+          "awslogs-group"         = "/aws/ecs/log-group"
           "awslogs-region"        = var.aws_region
           "awslogs-stream-prefix" = "ecs"
           "awslogs-create-group"  = "true"
@@ -316,7 +316,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
 resource "aws_ecs_service" "ecs_service" {
   name            = "ecs-service"
   cluster         = aws_ecs_cluster.ecs_cluster.arn
-  task_definition = aws_ecs_task_definition.ecs_task_definition.arn
+  task_definition = aws_ecs_task_definition.task_definition.arn
   desired_count   = 1
   launch_type     = "FARGATE"  # Indica que o serviço será executado no Fargate
 
