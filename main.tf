@@ -67,16 +67,6 @@ resource "aws_iam_role" "task_role" {
   ]
 }
 
-resource "aws_cloudwatch_log_group" "aws_log_group" {
-  name              = "/aws/ecs/log-group"  # Nome do grupo de logs
-  retention_in_days = 7  # Retenção em dias, ajuste conforme necessário
-}
-
-resource "aws_cloudwatch_log_stream" "log_stream" {
-  name           = "log-stream"
-  log_group_name = aws_cloudwatch_log_group.aws_log_group.name
-}
-
 
 # Defina uma definição de task ECS
 resource "aws_ecs_task_definition" "task_definition" {
@@ -103,9 +93,10 @@ resource "aws_ecs_task_definition" "task_definition" {
       logConfiguration = {
         logDriver = "awslogs",
         options = {
-          "awslogs-group"         = aws_cloudwatch_log_group.aws_log_group.name,
+          "awslogs-create-group": "true",
+          "awslogs-group"         = "/ecs/log-group",
           "awslogs-region"        = var.aws_region,
-          "awslogs-stream-prefix" = aws_cloudwatch_log_stream.log_stream.name
+          "awslogs-stream-prefix" = "ecs"
         }
       }
     }
