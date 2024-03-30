@@ -276,6 +276,11 @@ resource "aws_iam_role_policy_attachment" "attach_dynamodb_policy" {
   policy_arn = aws_iam_policy.ecs_policy.arn
 }
 
+resource "aws_cloudwatch_log_group" "aws_log_group" {
+  name              = "/aws/ecs/log-group"  # Nome do grupo de logs
+  retention_in_days = 7  # Retenção em dias, ajuste conforme necessário
+}
+
 
 # Defina uma definição de task ECS
 resource "aws_ecs_task_definition" "task_definition" {
@@ -302,10 +307,9 @@ resource "aws_ecs_task_definition" "task_definition" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group"         = "/aws/ecs/log-group"
+          "awslogs-group"         = aws_cloudwatch_log_group.aws_log_group.name
           "awslogs-region"        = var.aws_region
           "awslogs-stream-prefix" = "log-stream"
-          "awslogs-create-group"  = "true"
         }
       }
     }
