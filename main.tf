@@ -297,7 +297,15 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           "containerPort": 8080,
           "hostPort": 8080
         }
-      ]
+      ],
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = "/ecs/ecs-container"
+          "awslogs-region"        = "us-west-2"
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
     }
   ])
 }
@@ -321,6 +329,10 @@ resource "aws_ecs_service" "ecs_service" {
     container_name   = "ecs-container"
     container_port   = 8080
   }
+
+  # Configuração de logs
+  deployment_maximum_percent         = 200
+  deployment_minimum_healthy_percent = 100
 
   depends_on = [ aws_alb_listener.alb_listener ]
 }
