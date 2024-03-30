@@ -95,7 +95,11 @@ resource "aws_iam_policy" "ecs_policy" {
                 "servicediscovery:Get*",
                 "servicediscovery:List*",
                 "servicediscovery:RegisterInstance",
-                "servicediscovery:UpdateInstanceCustomHealthStatus"
+                "servicediscovery:UpdateInstanceCustomHealthStatus",
+                "ecr:GetAuthorizationToken",
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage"
             ],
             "Resource": "*"
         },
