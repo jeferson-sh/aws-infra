@@ -46,6 +46,7 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy_attach
 resource "aws_ecs_task_definition" "ecs_task_definition" {
   count = length(aws_ecs_task_definition.ecs_task_definition) == 0 ? 1 : 0
   family                   = "ecs-task-definition"
+  network_mode             = "awsvpc"
   container_definitions    = <<EOF
 [
   {
@@ -72,10 +73,11 @@ resource "aws_ecs_service" "ecs_service" {
   cluster         = aws_ecs_cluster.ecs_cluster[0].arn
   task_definition = aws_ecs_task_definition.ecs_task_definition[0].arn
   desired_count   = 1
+  launch_type     = "FARGATE"  # Indica que o serviço será executado no Fargate
 
   # Configurações para Load Balancer
   network_configuration {
-    assign_public_ip = true
+    security_groups = [aws_security_group.ecs_security_group]
     subnets = var.subnet_ids
   }
 
