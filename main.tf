@@ -281,6 +281,11 @@ resource "aws_cloudwatch_log_group" "aws_log_group" {
   retention_in_days = 7  # Retenção em dias, ajuste conforme necessário
 }
 
+resource "aws_cloudwatch_log_stream" "log_stream" {
+  name           = "log-stream"
+  log_group_name = aws_cloudwatch_log_group.aws_log_group.name
+}
+
 
 # Defina uma definição de task ECS
 resource "aws_ecs_task_definition" "task_definition" {
@@ -309,7 +314,7 @@ resource "aws_ecs_task_definition" "task_definition" {
         options = {
           "awslogs-group"         = aws_cloudwatch_log_group.aws_log_group.name
           "awslogs-region"        = var.aws_region
-          "awslogs-stream-prefix" = "log-stream"
+          "awslogs-stream-prefix" = aws_cloudwatch_log_stream.log_stream.name
         }
       }
     }
