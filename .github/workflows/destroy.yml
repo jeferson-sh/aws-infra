@@ -1,0 +1,23 @@
+name: Destroy Infrastructure
+
+on:
+  workflow_dispatch:  # Isso permite que você acione manualmente o fluxo de trabalho
+
+jobs:
+  destroy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.1.0
+
+      - name: Initialize Terraform
+        run: terraform init
+
+      - name: Destroy Terraform
+        run: terraform destroy -auto-approve
