@@ -3,11 +3,6 @@ provider "aws" {
   region = var.aws_region  # Defina a região desejada
 }
 
-# Crie um bucket S3 para armazenar o estado do Terraform
-resource "aws_s3_bucket" "terraform_state_bucket" {
-  bucket = "bucket-s3-terraform"  # Nome do seu bucket S3
-}
-
 # Configuração do backend S3 para armazenar o estado do Terraform
 terraform {
   backend "s3" {
