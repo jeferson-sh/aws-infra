@@ -74,7 +74,7 @@ resource "aws_iam_role" "task_role" {
 
 # Defina uma definição de task ECS
 resource "aws_ecs_task_definition" "task_definition" {
-  family                   = "ecs-task-definition"
+  family                   = "aws-task-definition"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu = 256
