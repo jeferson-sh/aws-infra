@@ -117,7 +117,7 @@ resource "aws_ecs_service" "ecs_service" {
 
   # Configurações para Load Balancer
   network_configuration {
-    security_groups = [aws_security_group.ecs_security_group.id,"sg-0ec551acf847fe75a"]
+    security_groups = ["sg-0ec551acf847fe75a"]
     subnets = var.subnet_ids
   }
 
@@ -156,7 +156,7 @@ resource "aws_lb" "ecs_load_balancer" {
   name               = "ecs-load-balancer"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.ecs_security_group.id, "sg-0ec551acf847fe75a"]
+  security_groups    = ["sg-0ec551acf847fe75a"]
   subnets            = var.subnet_ids  # Defina os IDs das sub-redes onde o Load Balancer será criado
 
   tags = {
@@ -164,25 +164,25 @@ resource "aws_lb" "ecs_load_balancer" {
   }
 }
 
-# Crie um Security Group para o Load Balancer
-resource "aws_security_group" "ecs_security_group" {
-  name        = "ecs-security-group"
-  description = "Allow HTTP inbound traffic"
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
+## Crie um Security Group para o Load Balancer
+#resource "aws_security_group" "ecs_security_group" {
+#  name        = "ecs-security-group"
+#  description = "Allow HTTP inbound traffic"
+#
+#  ingress {
+#    from_port   = 80
+#    to_port     = 80
+#    protocol    = "tcp"
+#    cidr_blocks = ["0.0.0.0/0"]
+#  }
+#
+#  egress {
+#    from_port   = 0
+#    to_port     = 0
+#    protocol    = "-1"
+#    cidr_blocks = ["0.0.0.0/0"]
+#  }
+#}
 
 resource "aws_alb_listener" "alb_listener" {
   load_balancer_arn = aws_lb.ecs_load_balancer.arn
