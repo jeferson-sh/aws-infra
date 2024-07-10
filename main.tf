@@ -208,7 +208,7 @@ resource "aws_alb_listener" "alb_listener" {
 }
 
 data "aws_ecr_image" "service_image" {
-  depends_on = [aws_ecr_repository.ecr_repository, aws_ecs_task_definition.task_definition]
+  depends_on = [aws_ecr_repository.ecr_repository]
   repository_name = var.ecr_repository_name
-  most_recent       = true
+  image_tag = "latest"
 }
