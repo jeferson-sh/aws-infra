@@ -88,7 +88,7 @@ resource "aws_ecs_task_definition" "task_definition" {
   container_definitions    = jsonencode([
     {
       name  = var.ecs_container_name,
-      image = aws_ecr_repository.ecr_repository,
+      image = aws_ecr_repository.ecr_repository.repository_url,
       cpu   = 256,
       memory = 512,
       essential = true,
