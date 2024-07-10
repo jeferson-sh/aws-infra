@@ -72,7 +72,7 @@ resource "aws_iam_role" "task_role" {
 
 # Data source to get the latest ECR image
 data "aws_ecr_image" "latest_image" {
-  repository_name = var.ecr_repository_name
+  repository_name = aws_ecr_repository.ecr_repository.name
   image_tag       = "latest"
 }
 
@@ -88,7 +88,7 @@ resource "aws_ecs_task_definition" "task_definition" {
   container_definitions    = jsonencode([
     {
       name  = var.ecs_container_name,
-      image = "${aws_ecr_repository.ecr_repository.repository_url}:${data.aws_ecr_image.latest_image.image_tag}",
+      image = data.aws_ecr_image.latest_image.image_uri,
       cpu   = 256,
       memory = 512,
       essential = true,
