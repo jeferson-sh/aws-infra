@@ -210,5 +210,4 @@ resource "aws_alb_listener" "alb_listener" {
 data "aws_ecr_image" "service_image" {
   repository_name = var.ecr_repository_name
   most_recent       = true
-  image_tag = "latest"
 }
