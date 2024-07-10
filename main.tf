@@ -6,9 +6,9 @@ provider "aws" {
 # Configuração do backend S3 para armazenar o estado do Terraform
 terraform {
   backend "s3" {
-    bucket = var.s3_bucket_name  # Nome do bucket S3 onde o estado será armazenado
-    key    = var.s3_bucket_key  # Nome do arquivo de estado no bucket
-    region = var.aws_region  # Região onde o bucket S3 está localizado
+    bucket = "bucket-s3-terraform"  # Nome do bucket S3 onde o estado será armazenado
+    key    = "terraform.tfstate"  # Nome do arquivo de estado no bucket
+    region = "us-east-2"  # Região onde o bucket S3 está localizado
   }
 }
 
