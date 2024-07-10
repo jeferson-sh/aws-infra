@@ -70,6 +70,12 @@ resource "aws_iam_role" "task_role" {
   ]
 }
 
+# Data source to get the latest ECR image
+data "aws_ecr_image" "latest_image" {
+  repository_name = var.ecr_repository_name
+  image_tag       = "latest"
+}
+
 # Defina uma definição de task ECS
 resource "aws_ecs_task_definition" "task_definition" {
   family                   = var.ecs_task_definition_family
@@ -82,7 +88,7 @@ resource "aws_ecs_task_definition" "task_definition" {
   container_definitions    = jsonencode([
     {
       name  = var.ecs_container_name,
-      image = aws_ecr_repository.ecr_repository.repository_url,
+      image = "${aws_ecr_repository.ecr_repository.repository_url}:${data.aws_ecr_image.latest_image.image_tag}",
       cpu   = 256,
       memory = 512,
       essential = true,
@@ -205,10 +211,4 @@ resource "aws_alb_listener" "alb_listener" {
     target_group_arn = aws_lb_target_group.ecs_target_group.arn
     type             = "forward"
   }
-}
-
-data "aws_ecr_image" "service_image" {
-  depends_on = [aws_ecr_repository.ecr_repository]
-  repository_name = var.ecr_repository_name
-  image_tag = "latest"
 }
