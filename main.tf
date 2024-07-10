@@ -70,11 +70,11 @@ resource "aws_iam_role" "task_role" {
   ]
 }
 
-# Data source to get the latest ECR image
-data "aws_ecr_image" "latest_image" {
-  repository_name = aws_ecr_repository.ecr_repository.name
-  image_tag       = "latest"
-}
+# # Data source to get the latest ECR image
+# data "aws_ecr_image" "latest_image" {
+#   repository_name = aws_ecr_repository.ecr_repository.name
+#   image_tag       = "latest"
+# }
 
 # Defina uma definição de task ECS
 resource "aws_ecs_task_definition" "task_definition" {
@@ -88,7 +88,7 @@ resource "aws_ecs_task_definition" "task_definition" {
   container_definitions    = jsonencode([
     {
       name  = var.ecs_container_name,
-      image = data.aws_ecr_image.latest_image.image_uri,
+      image = aws_ecr_repository.ecr_repository,
       cpu   = 256,
       memory = 512,
       essential = true,
