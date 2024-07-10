@@ -18,6 +18,12 @@ resource "aws_ecr_repository" "ecr_repository" {
   force_delete = true
 }
 
+# Data source to get the latest ECR image
+data "aws_ecr_image" "latest_image" {
+  repository_name = aws_ecr_repository.ecr_repository.name
+  image_tag       = "latest"
+}
+
 # Crie um cluster ECS
 resource "aws_ecs_cluster" "ecs_cluster" {
   name = var.ecs_cluster_name  # Nome do cluster
@@ -70,12 +76,6 @@ resource "aws_iam_role" "task_role" {
   ]
 }
 
-# # Data source to get the latest ECR image
-# data "aws_ecr_image" "latest_image" {
-#   repository_name = aws_ecr_repository.ecr_repository.name
-#   image_tag       = "latest"
-# }
-
 # Defina uma definição de task ECS
 resource "aws_ecs_task_definition" "task_definition" {
   family                   = var.ecs_task_definition_family
@@ -88,7 +88,7 @@ resource "aws_ecs_task_definition" "task_definition" {
   container_definitions    = jsonencode([
     {
       name  = var.ecs_container_name,
-      image = aws_ecr_repository.ecr_repository.repository_url,
+      image = data.aws_ecr_image.latest_image.image_uri,
       cpu   = 256,
       memory = 512,
       essential = true,
