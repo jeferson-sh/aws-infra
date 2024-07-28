@@ -1,4 +1,4 @@
-name: Terraform Pipeline
+name: Build Infrastructure
 on:
   workflow_dispatch:  # Isso permite que você acione manualmente o fluxo de trabalho
 
