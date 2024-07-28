@@ -71,45 +71,45 @@ resource "aws_iam_role" "task_role" {
 }
 
 # Defina uma definição de task ECS
-resource "aws_ecs_task_definition" "task_definition" {
-  family                   = var.ecs_task_definition_family
-  network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
-  cpu                      = 256
-  memory                   = 512
-  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
-  task_role_arn            = aws_iam_role.task_role.arn
-  container_definitions    = jsonencode([
-    {
-      name  = var.ecs_container_name,
-      image = "${aws_ecr_repository.ecr_repository.repository_url}:latest",
-      cpu   = 256,
-      memory = 512,
-      essential = true,
-      portMappings = [
-        {
-          containerPort = 8080,
-          hostPort      = 8080
-        }
-      ],
-      logConfiguration = {
-        logDriver = "awslogs",
-        options = {
-          "awslogs-create-group" = "true",
-          "awslogs-group"         = "/ecs/log-group-${var.ecs_container_name}",
-          "awslogs-region"        = var.aws_region,
-          "awslogs-stream-prefix" = "ecs-${var.ecs_container_name}"
-        }
-      }
-    }
-  ])
-}
+# resource "aws_ecs_task_definition" "task_definition" {
+#   family                   = var.ecs_task_definition_family
+#   network_mode             = "awsvpc"
+#   requires_compatibilities = ["FARGATE"]
+#   cpu                      = 256
+#   memory                   = 512
+#   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+#   task_role_arn            = aws_iam_role.task_role.arn
+#   container_definitions    = jsonencode([
+#     {
+#       name  = var.ecs_container_name,
+#       image = "${aws_ecr_repository.ecr_repository.repository_url}:latest",
+#       cpu   = 256,
+#       memory = 512,
+#       essential = true,
+#       portMappings = [
+#         {
+#           containerPort = 8080,
+#           hostPort      = 8080
+#         }
+#       ],
+#       logConfiguration = {
+#         logDriver = "awslogs",
+#         options = {
+#           "awslogs-create-group" = "true",
+#           "awslogs-group"         = "/ecs/log-group-${var.ecs_container_name}",
+#           "awslogs-region"        = var.aws_region,
+#           "awslogs-stream-prefix" = "ecs-${var.ecs_container_name}"
+#         }
+#       }
+#     }
+#   ])
+# }
 
 # Defina um serviço ECS
 resource "aws_ecs_service" "ecs_service" {
   name            = var.ecs_service_name
   cluster         = aws_ecs_cluster.ecs_cluster.arn
-  task_definition = aws_ecs_task_definition.task_definition.arn
+#   task_definition = aws_ecs_task_definition.task_definition.arn
   desired_count   = 2
   launch_type     = "FARGATE"  # Indica que o serviço será executado no Fargate
 
