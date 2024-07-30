@@ -110,7 +110,7 @@ resource "aws_ecs_service" "ecs_service" {
   name            = var.ecs_service_name
   cluster         = aws_ecs_cluster.ecs_cluster.arn
   task_definition = aws_ecs_task_definition.task_definition.arn
-  desired_count   = 2
+  desired_count   = 0
   launch_type     = "FARGATE"  # Indica que o serviço será executado no Fargate
 
   # Configurações para Load Balancer
@@ -168,13 +168,6 @@ resource "aws_security_group" "ecs_security_group" {
   description = "Allow HTTP inbound traffic"
 
   ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
