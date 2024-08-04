@@ -46,7 +46,9 @@ resource "aws_iam_role" "ecs_task_execution_role" {
     "arn:aws:iam::aws:policy/AmazonVPCFullAccess",
     "arn:aws:iam::aws:policy/AmazonSSMFullAccess",
     "arn:aws:iam::aws:policy/SecretsManagerReadWrite",
-    "arn:aws:iam::aws:policy/service-role/ROSAKMSProviderPolicy"]
+    "arn:aws:iam::aws:policy/service-role/ROSAKMSProviderPolicy",
+    "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+  ]
 }
 
 resource "aws_iam_role" "task_role" {
@@ -110,7 +112,7 @@ resource "aws_ecs_service" "ecs_service" {
   name            = var.ecs_service_name
   cluster         = aws_ecs_cluster.ecs_cluster.arn
   task_definition = aws_ecs_task_definition.task_definition.arn
-  desired_count   = 0
+  desired_count   = 1
   launch_type     = "FARGATE"  # Indica que o serviço será executado no Fargate
 
   # Configurações para Load Balancer
