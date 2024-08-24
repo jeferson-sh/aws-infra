@@ -84,7 +84,7 @@ resource "aws_ecs_task_definition" "task_definition" {
   container_definitions    = jsonencode([
     {
       name  = var.ecs_container_name,
-      image = "${aws_ecr_repository.ecr_repository.repository_url}:latest",
+      image = "nginx:latest",
       cpu   = 256,
       memory = 512,
       essential = true,
@@ -112,7 +112,7 @@ resource "aws_ecs_service" "ecs_service" {
   name            = var.ecs_service_name
   cluster         = aws_ecs_cluster.ecs_cluster.arn
   task_definition = aws_ecs_task_definition.task_definition.arn
-  desired_count   = 0  # Não inicia nenhuma tarefa
+  desired_count   = 1
   launch_type     = "FARGATE"  # Indica que o serviço será executado no Fargate
 
   # Configurações para Load Balancer
