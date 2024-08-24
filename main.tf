@@ -107,7 +107,7 @@ resource "aws_ecs_task_definition" "task_definition" {
   ])
 }
 
-# Defina um serviço ECS com zero tarefas desejadas
+# Defina um serviço ECS com tarefas desejadas
 resource "aws_ecs_service" "ecs_service" {
   name            = var.ecs_service_name
   cluster         = aws_ecs_cluster.ecs_cluster.arn
@@ -128,9 +128,14 @@ resource "aws_ecs_service" "ecs_service" {
     container_port   = 8080
   }
 
-  # Configuração de logs
   deployment_maximum_percent         = 200
   deployment_minimum_healthy_percent = 100
+  enable_circuit_breaker  = true
+  rollback_on_failure     = true
+
+  deployment_controller {
+    type = "ECS"
+  }
 
   depends_on = [aws_alb_listener.alb_listener]
 }
