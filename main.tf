@@ -18,6 +18,18 @@ resource "aws_ecr_repository" "ecr_repository" {
   force_delete = true
 }
 
+resource "null_resource" "pull_nginx_image" {
+  provisioner "local-exec" {
+    command = <<EOT
+      aws ecr get-login-password --region ${var.aws_region} | docker login --username AWS --password-stdin ${aws_ecr_repository.ecr_repository.repository_url}
+      docker pull nginx:latest
+      docker tag nginx:latest ${aws_ecr_repository.ecr_repository.repository_url}:latest
+      docker push ${aws_ecr_repository.ecr_repository.repository_url}:latest
+    EOT
+  }
+  depends_on = [aws_ecr_repository.ecr_repository]
+}
+
 # Crie um cluster ECS
 resource "aws_ecs_cluster" "ecs_cluster" {
   name = var.ecs_cluster_name  # Nome do cluster
