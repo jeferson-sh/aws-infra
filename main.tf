@@ -128,14 +128,9 @@ resource "aws_ecs_service" "ecs_service" {
     container_port   = 8080
   }
 
+  # Configuração de deployment
   deployment_maximum_percent         = 200
   deployment_minimum_healthy_percent = 100
-  enable_circuit_breaker  = true
-  rollback_on_failure     = true
-
-  deployment_controller {
-    type = "ECS"
-  }
 
   depends_on = [aws_alb_listener.alb_listener]
 }
