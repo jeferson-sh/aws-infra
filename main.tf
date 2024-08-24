@@ -18,12 +18,12 @@ resource "aws_ecr_repository" "ecr_repository" {
   force_delete = true
 }
 
-resource "null_resource" "pull_tomcat_image" {
+resource "null_resource" "build_and_push_docker_image" {
   provisioner "local-exec" {
     command = <<EOT
       aws ecr get-login-password --region ${var.aws_region} | docker login --username AWS --password-stdin ${aws_ecr_repository.ecr_repository.repository_url}
-      docker pull tomcat:latest
-      docker tag tomcat:latest ${aws_ecr_repository.ecr_repository.repository_url}:latest
+      docker build -t custom_nginx_image:latest ./docker
+      docker tag custom_nginx_image:latest ${aws_ecr_repository.ecr_repository.repository_url}:latest
       docker push ${aws_ecr_repository.ecr_repository.repository_url}:latest
     EOT
   }
