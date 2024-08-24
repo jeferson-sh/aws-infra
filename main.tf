@@ -72,7 +72,7 @@ resource "aws_iam_role" "task_role" {
   ]
 }
 
-# Defina uma definição de task ECS
+# Defina uma definição de task ECS mínima
 resource "aws_ecs_task_definition" "task_definition" {
   family                   = var.ecs_task_definition_family
   network_mode             = "awsvpc"
@@ -107,12 +107,12 @@ resource "aws_ecs_task_definition" "task_definition" {
   ])
 }
 
-# Defina um serviço ECS
+# Defina um serviço ECS com zero tarefas desejadas
 resource "aws_ecs_service" "ecs_service" {
   name            = var.ecs_service_name
   cluster         = aws_ecs_cluster.ecs_cluster.arn
   task_definition = aws_ecs_task_definition.task_definition.arn
-  desired_count   = 1
+  desired_count   = 0  # Não inicia nenhuma tarefa
   launch_type     = "FARGATE"  # Indica que o serviço será executado no Fargate
 
   # Configurações para Load Balancer
@@ -164,7 +164,7 @@ resource "aws_lb" "ecs_load_balancer" {
   }
 }
 
-## Crie um Security Group para o Load Balancer
+# Crie um Security Group para o Load Balancer
 resource "aws_security_group" "ecs_security_group" {
   name        = var.ecs_security_group_name
   description = "Allow HTTP inbound traffic"
@@ -200,4 +200,54 @@ resource "aws_alb_listener" "alb_listener" {
     target_group_arn = aws_lb_target_group.ecs_target_group.arn
     type             = "forward"
   }
+}
+
+# Crie uma policy de auto scaling para o serviço ECS
+resource "aws_appautoscaling_target" "ecs_service_target" {
+  max_capacity       = 3  # Capacidade máxima
+  min_capacity       = 1  # Capacidade mínima
+  resource_id        = "service/${aws_ecs_cluster.ecs_cluster.name}/${aws_ecs_service.ecs_service.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+  scalable_target_arn = aws_ecs_service.ecs_service.id
+}
+
+resource "aws_appautoscaling_policy" "scale_out_policy" {
+  name                   = "scale-out-policy"
+  scaling_target_id      = aws_appautoscaling_target.ecs_service_target.id
+  policy_type            = "StepScaling"
+  adjustment_type        = "ChangeInCapacity"
+  step_scaling_policy_configuration {
+    adjustment_type    = "ChangeInCapacity"
+    cooldown           = 60
+    metric_aggregation_type = "Average"
+
+    step_adjustment {
+      scaling_adjustment = 1
+      threshold          = 50
+    }
+  }
+  resource_id        = "service/${aws_ecs_cluster.ecs_cluster.name}/${aws_ecs_service.ecs_service.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+}
+
+resource "aws_appautoscaling_policy" "scale_in_policy" {
+  name                   = "scale-in-policy"
+  scaling_target_id      = aws_appautoscaling_target.ecs_service_target.id
+  policy_type            = "StepScaling"
+  adjustment_type        = "ChangeInCapacity"
+  step_scaling_policy_configuration {
+    adjustment_type    = "ChangeInCapacity"
+    cooldown           = 60
+    metric_aggregation_type = "Average"
+
+    step_adjustment {
+      scaling_adjustment = -1
+      threshold          = 10
+    }
+  }
+  resource_id        = "service/${aws_ecs_cluster.ecs_cluster.name}/${aws_ecs_service.ecs_service.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
 }
