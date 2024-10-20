@@ -9,7 +9,7 @@ terraform {
   backend "s3" {
     bucket = "bucket-s3-terraform"  # Nome do bucket S3 onde o estado será armazenado
     key    = "terraform.tfstate"  # Nome do arquivo de estado no bucket
-    region = var.aws_region  # Região onde o bucket S3 está localizado
+    region = "us-east-2"  # Região onde o bucket S3 está localizado
   }
 }
 
