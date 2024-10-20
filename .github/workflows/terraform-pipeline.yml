@@ -39,7 +39,7 @@ jobs:
 
       - name: Set up Docker Build Environment
         run: |
-          docker build -t graalvm-native-builder -f Dockerfile .
+          docker build -t graalvm-native-builder -f app/Dockerfile .
 
       - name: Run GraalVM Native Build in Docker (Amazon Linux 2)
         run: |
