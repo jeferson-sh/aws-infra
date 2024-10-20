@@ -1,10 +1,11 @@
 name: Build Infrastructure
+
 on:
   workflow_dispatch:  # Isso permite que você acione manualmente o fluxo de trabalho
 
 jobs:
   terraform:
-    runs-on: ubuntu-latest
+    runs-on: amazonlinux2
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -29,3 +30,29 @@ jobs:
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
+
+  build_native_image:
+    runs-on: amazonlinux2
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Build Environment
+        run: |
+          docker build -t graalvm-native-builder -f Dockerfile .
+
+      - name: Run GraalVM Native Build in Docker
+        run: |
+          docker run --rm -v $(pwd):/workspace graalvm-native-builder /bin/bash -c "cd /workspace/app && ./mvnw -Pnative clean install -DskipTests"
+
+      - name: Prepare Deployment Package
+        run: |
+          cd app
+          mv bootstrap .
+          zip -j spring-native-function.zip bootstrap spring-native
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: lambda_deployment_package
+          path: app/spring-native-function.zip
