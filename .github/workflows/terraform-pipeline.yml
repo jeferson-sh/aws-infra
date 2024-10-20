@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
@@ -16,11 +16,11 @@ jobs:
           terraform_version: 1.1.0
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v3
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: us-east-2
 
       - name: Terraform Init
         run: terraform init
@@ -35,18 +35,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Set up GraalVM
-        uses: DeLaGuardo/setup-graalvm@v3
-        with:
-          graalvm: '22.1.0'  # Versão do GraalVM
-          java-version: '17'
-
-      - name: Build Native Image
+      - name: Set up Docker Build Environment
         run: |
-          cd app
-          ./mvnw -Pnative clean install -DskipTests
+          docker build -t graalvm-native-builder -f Dockerfile .
+
+      - name: Run GraalVM Native Build in Docker (Amazon Linux 2)
+        run: |
+          docker run --rm -v $(pwd):/workspace graalvm-native-builder /bin/bash -c "cd /workspace/app && ./mvnw -Pnative clean install -DskipTests"
 
       - name: Prepare Deployment Package
         run: |
@@ -55,7 +52,7 @@ jobs:
           zip -j spring-native-function.zip bootstrap spring-native
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: lambda_deployment_package
           path: app/spring-native-function.zip
