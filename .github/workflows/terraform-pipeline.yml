@@ -15,9 +15,15 @@ jobs:
           docker build -t graalvm-native-builder -f app/Dockerfile .
 
       - name: Prepare Deployment Package
+        working-directory: app
         run: |
-          cd app
-          mv bootstrap .
+          # Criar o arquivo 'bootstrap' se ele não existir
+          echo '#!/bin/sh' > bootstrap
+          echo './spring-native' >> bootstrap
+          chmod +x bootstrap
+          chmod +x spring-native
+
+          # Compactar o 'bootstrap' e o binário 'spring-native' em um arquivo ZIP
           zip -j spring-native-function.zip bootstrap spring-native
 
       - name: Upload Artifact
@@ -25,6 +31,7 @@ jobs:
         with:
           name: lambda_deployment_package
           path: app/spring-native-function.zip
+
 
   terraform:
     needs: build_native_image  # Adiciona dependência do job anterior
