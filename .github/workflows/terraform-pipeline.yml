@@ -5,7 +5,7 @@ on:
 
 jobs:
   terraform:
-    runs-on: amazonlinux2
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -20,7 +20,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-2
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Terraform Init
         run: terraform init
@@ -32,18 +32,21 @@ jobs:
         run: terraform apply -auto-approve
 
   build_native_image:
-    runs-on: amazonlinux2
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up Docker Build Environment
-        run: |
-          docker build -t graalvm-native-builder -f Dockerfile .
+      - name: Set up GraalVM
+        uses: DeLaGuardo/setup-graalvm@v3
+        with:
+          graalvm: '22.1.0'  # Versão do GraalVM
+          java-version: '17'
 
-      - name: Run GraalVM Native Build in Docker
+      - name: Build Native Image
         run: |
-          docker run --rm -v $(pwd):/workspace graalvm-native-builder /bin/bash -c "cd /workspace/app && ./mvnw -Pnative clean install -DskipTests"
+          cd app
+          ./mvnw -Pnative clean install -DskipTests
 
       - name: Prepare Deployment Package
         run: |
