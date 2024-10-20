@@ -2,19 +2,19 @@
 FROM ghcr.io/graalvm/graalvm-community:21 AS builder
 
 # Definir o diretório de trabalho para o código-fonte
-WORKDIR /workspace/app
+WORKDIR /workspace
 
-# Copiar o código fonte e os arquivos de configuração para o container
+# Copiar todos os arquivos do contexto de build para o container
 COPY . .
 
 # Garantir permissões para o Maven Wrapper (mvnw)
-RUN chmod +x mvnw
+RUN chmod +x app/mvnw
+
+# Navegar até o diretório da aplicação
+WORKDIR /workspace/app
 
 # Rodar o Maven para compilar o binário nativo
 RUN ./mvnw -Pnative clean install -DskipTests
-
-# Verificar o conteúdo da pasta após o build
-RUN ls -l /workspace/app/
 
 # Etapa 2: Usando Amazon Linux 2 para rodar o binário nativo
 FROM amazonlinux:latest
@@ -40,5 +40,5 @@ RUN chmod +x /app/application
 # Definir o entrypoint para rodar o binário nativo
 ENTRYPOINT ["/app/application"]
 
-# Expor a porta 8080 (ou qualquer porta configurada na aplicação)
+# Expor a porta 8080 (ou a porta configurada na aplicação)
 EXPOSE 8080
